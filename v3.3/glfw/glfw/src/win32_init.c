@@ -105,17 +105,21 @@ static GLFWbool loadLibraries(void)
     _glfw.win32.user32.GetSystemMetricsForDpi_ = (PFN_GetSystemMetricsForDpi)
         GetProcAddress(_glfw.win32.user32.instance, "GetSystemMetricsForDpi");
 
+    // This doesn't work on UWP
+    /*
     _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
     {
         _glfw.win32.dinput8.Create = (PFN_DirectInput8Create)
             GetProcAddress(_glfw.win32.dinput8.instance, "DirectInput8Create");
     }
+    */
 
     {
         int i;
         const char* names[] =
         {
+	    "xinputuap.dll",
             "xinput1_4.dll",
             "xinput1_3.dll",
             "xinput9_1_0.dll",
