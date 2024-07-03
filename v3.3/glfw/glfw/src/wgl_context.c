@@ -33,6 +33,9 @@
 #include <malloc.h>
 #include <assert.h>
 
+__declspec(dllimport) void* uwp_GetBundleFilePath(char* buffer, const char* filename);
+__declspec(dllimport) void* uwp_GetWindowReference();
+
 // Return the value corresponding to the specified attribute
 //
 static int findPixelFormatAttribValue(const int* attribs,
@@ -326,6 +329,7 @@ static void makeContextCurrentWGL(_GLFWwindow* window)
 
 static void swapBuffersWGL(_GLFWwindow* window)
 {
+/*
     if (!window->monitor)
     {
         if (IsWindowsVistaOrGreater())
@@ -343,6 +347,7 @@ static void swapBuffersWGL(_GLFWwindow* window)
             }
         }
     }
+*/
 
     SwapBuffers(window->context.wgl.dc);
 }
@@ -422,7 +427,9 @@ GLFWbool _glfwInitWGL(void)
     if (_glfw.wgl.instance)
         return GLFW_TRUE;
 
-    _glfw.wgl.instance = LoadLibraryA("opengl32.dll");
+    char libpath[256];
+    uwp_GetBundleFilePath(libpath, "opengl32.dll");
+    _glfw.wgl.instance = LoadLibraryA(libpath);
     if (!_glfw.wgl.instance)
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
@@ -450,7 +457,7 @@ GLFWbool _glfwInitWGL(void)
     // NOTE: This code will accept the Microsoft GDI ICD; accelerated context
     //       creation failure occurs during manual pixel format enumeration
 
-    dc = GetDC(_glfw.win32.helperWindowHandle);
+    dc = uwp_GetWindowReference(); // GetDC(helperWindowHandle);
 
     ZeroMemory(&pfd, sizeof(pfd));
     pfd.nSize = sizeof(pfd);
@@ -459,12 +466,15 @@ GLFWbool _glfwInitWGL(void)
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.cColorBits = 24;
 
+    // Pixel format forced in mesa
+    /*
     if (!SetPixelFormat(dc, ChoosePixelFormat(dc, &pfd), &pfd))
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
                              "WGL: Failed to set pixel format for dummy context");
         return GLFW_FALSE;
     }
+    */
 
     rc = wglCreateContext(dc);
     if (!rc)
@@ -560,7 +570,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
     if (ctxconfig->share)
         share = ctxconfig->share->context.wgl.handle;
 
-    window->context.wgl.dc = GetDC(window->win32.handle);
+    window->context.wgl.dc = uwp_GetWindowReference(); // GetDC(window->win32.handle);
     if (!window->context.wgl.dc)
     {
         _glfwInputError(GLFW_PLATFORM_ERROR,
@@ -568,6 +578,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
         return GLFW_FALSE;
     }
 
+    /*
     pixelFormat = choosePixelFormat(window, ctxconfig, fbconfig);
     if (!pixelFormat)
         return GLFW_FALSE;
@@ -586,6 +597,7 @@ GLFWbool _glfwCreateContextWGL(_GLFWwindow* window,
                              "WGL: Failed to set selected pixel format");
         return GLFW_FALSE;
     }
+    */
 
     if (ctxconfig->client == GLFW_OPENGL_API)
     {

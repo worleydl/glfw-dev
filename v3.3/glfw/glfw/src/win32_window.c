@@ -36,6 +36,8 @@
 #include <windowsx.h>
 #include <shellapi.h>
 
+__declspec(dllimport) void* uwp_GetWindowReference();
+
 // Returns the window style for the specified window
 //
 static DWORD getWindowStyle(const _GLFWwindow* window)
@@ -1269,6 +1271,7 @@ static int createNativeWindow(_GLFWwindow* window,
                               const _GLFWwndconfig* wndconfig,
                               const _GLFWfbconfig* fbconfig)
 {
+/*
     int frameX, frameY, frameWidth, frameHeight;
     WCHAR* wideTitle;
     DWORD style = getWindowStyle(window);
@@ -1317,8 +1320,10 @@ static int createNativeWindow(_GLFWwindow* window,
                                            NULL, // No window menu
                                            _glfw.win32.instance,
                                            (LPVOID) wndconfig);
+*/
+    window->win32.handle = uwp_GetWindowReference();
 
-    free(wideTitle);
+    //free(wideTitle);
 
     if (!window->win32.handle)
     {
@@ -1329,6 +1334,7 @@ static int createNativeWindow(_GLFWwindow* window,
 
     SetPropW(window->win32.handle, L"GLFW", window);
 
+    /*
     if (IsWindows7OrGreater())
     {
         ChangeWindowMessageFilterEx(window->win32.handle,
@@ -1338,9 +1344,11 @@ static int createNativeWindow(_GLFWwindow* window,
         ChangeWindowMessageFilterEx(window->win32.handle,
                                     WM_COPYGLOBALDATA, MSGFLT_ALLOW, NULL);
     }
+    */
 
     window->win32.scaleToMonitor = wndconfig->scaleToMonitor;
 
+    /*
     if (!window->monitor)
     {
         RECT rect = { 0, 0, wndconfig->width, wndconfig->height };
@@ -1408,6 +1416,7 @@ static int createNativeWindow(_GLFWwindow* window,
     }
 
     _glfwPlatformGetWindowSize(window, &window->win32.width, &window->win32.height);
+    */
 
     return GLFW_TRUE;
 }
@@ -1479,6 +1488,7 @@ int _glfwPlatformCreateWindow(_GLFWwindow* window,
         {
             if (!_glfwInitWGL())
                 return GLFW_FALSE;
+
             if (!_glfwCreateContextWGL(window, ctxconfig, fbconfig))
                 return GLFW_FALSE;
         }

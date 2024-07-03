@@ -29,6 +29,7 @@
 
 #include "internal.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
 
@@ -583,16 +584,19 @@ int _glfwPlatformInit(void)
     else if (IsWindowsVistaOrGreater())
         SetProcessDPIAware();
 
+    /*
     if (!_glfwRegisterWindowClassWin32())
         return GLFW_FALSE;
 
     if (!createHelperWindow())
         return GLFW_FALSE;
+    */
 
     _glfwInitTimerWin32();
     _glfwInitJoysticksWin32();
 
     _glfwPollMonitorsWin32();
+
     return GLFW_TRUE;
 }
 
