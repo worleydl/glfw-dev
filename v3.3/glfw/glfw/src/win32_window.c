@@ -1415,8 +1415,8 @@ static int createNativeWindow(_GLFWwindow* window,
         window->win32.transparent = GLFW_TRUE;
     }
 
-    _glfwPlatformGetWindowSize(window, &window->win32.width, &window->win32.height);
     */
+    _glfwPlatformGetWindowSize(window, &window->win32.width, &window->win32.height);
 
     return GLFW_TRUE;
 }
