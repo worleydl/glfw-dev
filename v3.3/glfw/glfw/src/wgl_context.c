@@ -35,6 +35,7 @@
 
 __declspec(dllimport) void* uwp_GetBundleFilePath(char* buffer, const char* filename);
 __declspec(dllimport) void* uwp_GetWindowReference();
+__declspec(dllimport) void uwp_ProcessEvents();
 
 // Return the value corresponding to the specified attribute
 //
@@ -349,7 +350,9 @@ static void swapBuffersWGL(_GLFWwindow* window)
     }
 */
 
-    SwapBuffers(window->context.wgl.dc);
+    uwp_ProcessEvents(); // TODO: Probably a better spot to put this, poc for now
+    //SwapBuffers(window->context.wgl.dc);
+    _glfw.wgl.SwapBuffers(window->context.wgl.dc);
 }
 
 static void swapIntervalWGL(int interval)
@@ -451,6 +454,10 @@ GLFWbool _glfwInitWGL(void)
         GetProcAddress(_glfw.wgl.instance, "wglMakeCurrent");
     _glfw.wgl.ShareLists = (PFN_wglShareLists)
         GetProcAddress(_glfw.wgl.instance, "wglShareLists");
+
+    // UWP needs direct hookup
+    _glfw.wgl.SwapBuffers = (PFN_wglSwapBuffers)
+	GetProcAddress(_glfw.wgl.instance, "wglSwapBuffers");
 
     // NOTE: A dummy context has to be created for opengl32.dll to load the
     //       OpenGL ICD, from which we can then query WGL extensions
