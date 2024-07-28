@@ -37,6 +37,7 @@
 #include <shellapi.h>
 
 __declspec(dllimport) void* uwp_GetWindowReference();
+__declspec(dllimport) void uwp_RegisterGamepadCallbacks(void (*callback)(void));
 
 // Returns the window style for the specified window
 //
@@ -1417,6 +1418,9 @@ static int createNativeWindow(_GLFWwindow* window,
 
     */
     _glfwPlatformGetWindowSize(window, &window->win32.width, &window->win32.height);
+
+    // Setup input handling for UWP platforms
+    uwp_RegisterGamepadCallbacks(_glfwDetectJoystickConnectionWin32);
 
     return GLFW_TRUE;
 }
